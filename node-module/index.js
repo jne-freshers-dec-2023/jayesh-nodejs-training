@@ -1,6 +1,6 @@
 
-var convertToArray = require('./util')
-var cta = require('./util')
+const convertToArray = require('./util')
+const cta = require('./util')
 
 // import cta from './util';
 
