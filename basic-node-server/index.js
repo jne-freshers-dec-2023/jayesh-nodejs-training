@@ -7,4 +7,3 @@ http.createServer((req,res) =>{
 }).listen(5000,()=>{
     console.log("server is created on server port : 5000");
 })
-
