@@ -3,8 +3,6 @@ const bodyParser = require('body-parser')
 
 const app = express()
 
-
-
 // create application/json parser
 const jsonParser = bodyParser.json()
 
@@ -36,8 +34,9 @@ app.get('/user/add',(req,res) => {
 app.post('/user/add',(req,res) =>{
     console.log(req.body.username);
     console.log('Post request.');
+    res.redirect('/')
 })
 
-app.listen(4000,() =>{
-    console.log('Server is listening on port : 4000');
+app.listen(4040,() =>{
+    console.log('Server is listening on port : 4040');
 })
