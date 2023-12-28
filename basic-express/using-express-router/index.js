@@ -7,8 +7,13 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(adminRoutes);
+
+app.use("/admin",adminRoutes);   // start with /admin are filtering here 
 app.use(shopRoutes);
+
+app.use((req,res,next) =>{
+  res.status(404).send("<h1>Page Not Found.</h1>")
+})
 
 app.listen(5100, () => {
   console.log("server is listening on port : 5100");

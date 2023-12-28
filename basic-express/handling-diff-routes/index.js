@@ -18,6 +18,7 @@ app.use("/", (req, res, next) => {
   res.send("<h1>Hello from Express JS!</h1>");
 });
 
+//  need to maintain the order for -app.use
 
 app.listen(PORT, () => {
   console.log("Server is linstenning on port : 3333");
