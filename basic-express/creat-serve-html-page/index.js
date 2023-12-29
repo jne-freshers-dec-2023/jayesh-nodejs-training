@@ -8,6 +8,7 @@ const shopRoutes = require("./routes/shop");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
 app.use("/admin",adminRoutes);   // start with /admin are filtering here 
 app.use(shopRoutes);
 
