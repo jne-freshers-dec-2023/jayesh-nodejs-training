@@ -1,30 +1,32 @@
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-const jwt = require('jsonwebtoken')
+module.exports = (req, res, next) => {
+  const authHeader = req.get("Authorization");
 
-module.exports = (req,res,next) =>{
+  if (!authHeader) {
+    const error = new Error("Not Authenticated.");
+    error.status = 401;
+    throw error;
+  }
 
-    const authHeader = req.get('Authorization');
+  const token = authHeader.split(" ")[1];
+  console.log(token);
+  let decodedToken;
+  try {
+    console.log(process.env.SECRETE_KEY);
+    decodedToken = jwt.verify(token, process.env.SECRETE_KEY); // decode + verify
+  } catch (err) {
+    err.status = 500;
+    throw err;
+  }
 
-    if(!authHeader){
-        const error = new Error('Not Authenticated.')
-        error.status = 401;
-        throw error;
-    }
-
-    const token = authHeader.split(' ')[1]
-    let decodedToken ;
-    try{
-        decodedToken = jwt.verify(token,'secretkey')   // decode + verify
-    }catch(err){
-        err.status = 500;
-        throw err
-    }
-
-    if(!decodedToken){
-        const error = new Error("Not Autheticated.")
-        error.statusCode = 401;
-       throw error
-    }
-    req.userId = decodedToken.userId;
-    next()
-}
+  if (!decodedToken) {
+    const error = new Error("Not Autheticated.");
+    error.statusCode = 401;
+    throw error;
+  }
+  console.log(decodedToken.userId);
+  req.userId = decodedToken.userId;
+  next();
+};

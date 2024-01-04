@@ -6,7 +6,6 @@ const path = require('path')
 const multer = require('multer')
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth')
-const { Stats } = require('fs');
 
 const app = express();
 
