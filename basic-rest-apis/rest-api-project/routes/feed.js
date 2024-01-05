@@ -1,18 +1,20 @@
-
-const express = require('express');
-
-const feedController = require('../controllers/feed');
+const express = require("express");
+const { body } = require("express-validator/check");
+const { postValidation } = require("../validations/post");
+const feedController = require("../controllers/feed");
+const isAuth = require("../middleware/is-auth");
 
 const router = express.Router();
 
-router.get('/posts', feedController.getPosts);
+// router.use(isAuth)
+router.get("/posts", isAuth,feedController.getPosts);
 
-// router.get('/posts', (req,res) =>{
-//     res.status(200).json({
-//         posts: [{ title: 'First Post', content: 'This is the first post!' }]
-//       });
-//     });
+router.post("/post", isAuth,postValidation, feedController.createPost);
 
-router.post('/post',feedController.createPost)
+router.get("/post/:postId", isAuth,feedController.getPost);
+
+router.put("/post/:postId",isAuth,postValidation, feedController.updatePost);
+
+router.delete("/post/:postId", isAuth,feedController.deletePost);
 
 module.exports = router;
