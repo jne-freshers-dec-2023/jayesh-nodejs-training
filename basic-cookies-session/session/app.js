@@ -20,7 +20,7 @@ const user = {
     Address: "Pune",
 }; 
 
-app.get("/login", (req, res) => {
+app.post("/login", (req, res) => {
     req.session.user = "jayesh"                                                                                                                                              ;
     req.session.save();
     return res.send("Your are logged in");
