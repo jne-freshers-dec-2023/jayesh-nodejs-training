@@ -3,7 +3,6 @@ const Post = require("../models/post");
 const fs = require("fs");
 const path = require("path");
 const User = require("../models/user");
-const user = require("../models/user");
 
 exports.getPosts = (req, res, next) => {
   Post.find()
@@ -149,9 +148,15 @@ exports.deletePost = (req, res, next) => {
         return error;
       }
       clearImage(post.imageUrl);
-      // return Post.deleteOne(postId);
-      // return Post.deleteOne({ "creator" : ObjectId(`${postId}`)});
      return Post.deleteOne({ _id: postId });
+    })
+    .then(result =>{
+      return User.findById(req.userId)
+    })
+    .then(user =>{
+      console.log("postId delete api", postId);
+     console.log( user.posts.pull(postId)); 
+      return user.save()
     })
     .then((result) => {
       console.log(result);

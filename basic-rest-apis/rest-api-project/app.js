@@ -6,6 +6,7 @@ const path = require('path')
 const multer = require('multer')
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth')
+const dashRoutes = require('./routes/dashboard')
 
 const app = express();
 
@@ -38,7 +39,8 @@ app.use((req,res,next)=>{
 })
 
 app.use('/feed', feedRoutes);
-app.use('/auth', authRoutes); 
+app.use('/auth', authRoutes);
+app.use('/dash',dashRoutes) 
 
 app.use((error,req,res,next) =>{
     console.log(error);
