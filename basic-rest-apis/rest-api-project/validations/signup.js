@@ -15,6 +15,7 @@ const signUpValidation = [
     .normalizeEmail(),
   body("password").trim().isLength({ min: 5 }),
   body("name").trim().not().isEmpty(),
+  body("role").trim().not().isEmpty(),
 ];
 
 module.exports = { signUpValidation };

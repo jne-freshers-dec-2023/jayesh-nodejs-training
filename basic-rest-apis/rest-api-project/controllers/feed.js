@@ -3,7 +3,6 @@ const Post = require("../models/post");
 const fs = require("fs");
 const path = require("path");
 const User = require("../models/user");
-const user = require("../models/user");
 
 exports.getPosts = (req, res, next) => {
   Post.find()
@@ -67,23 +66,28 @@ exports.createPost = (req, res, next) => {
 };
 
 exports.getPost = (req, res, next) => {
-  const postId = req.params.postId;
+  try {
+    const postId = req.params.postId;
 
-  Post.findById(postId)
-    .then((post) => {
-      if (!post) {
-        const error = new Error("Could not find post.");
-        error.statusCode = 404;
-        throw error; // after throwing the error the catch block will executed.
-      }
-      res.status(200).json({ message: "Post fetched.", post: post });
-    })
-    .catch((err) => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+    Post.findById(postId)
+      .then((post) => {
+        if (!post) {
+          const error = new Error("Could not find post.");
+          error.statusCode = 404;
+          throw error; // after throwing the error the catch block will executed.
+        }
+        res.status(200).json({ message: "Post fetched.", post: post });
+      })
+      .catch((err) => {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        next(err);
+      });
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
 };
 
 exports.updatePost = (req, res, next) => {
@@ -149,9 +153,15 @@ exports.deletePost = (req, res, next) => {
         return error;
       }
       clearImage(post.imageUrl);
-      // return Post.deleteOne(postId);
-      // return Post.deleteOne({ "creator" : ObjectId(`${postId}`)});
-     return Post.deleteOne({ _id: postId });
+      return Post.deleteOne({ _id: postId });
+    })
+    .then((result) => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      console.log("postId delete api", postId);
+      console.log(user.posts.pull(postId));
+      return user.save();
     })
     .then((result) => {
       console.log(result);
