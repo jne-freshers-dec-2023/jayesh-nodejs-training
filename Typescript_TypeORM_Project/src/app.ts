@@ -1,10 +1,8 @@
 import express from "express";
 import { DataSource } from "typeorm";
-// import { isAuth } from "./middleware/is-auth";
 import { json } from "body-parser";
 import { router as authRouter } from "./routes/auth";
 import { router as feedRouter } from "./routes/feed";
-import { isAuth } from "./middleware/is-auth";
 
 const app = express();
 
@@ -13,8 +11,8 @@ const port = 3000;
 const connectDB = new DataSource({
   type: "postgres",
   host: process.env.DB_HOST,
-  username: "postgres",
-  password: "postgres",
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASS,
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT || "5432"),
   entities: ["src/entities/Post.ts", "src/entities/User.ts"],

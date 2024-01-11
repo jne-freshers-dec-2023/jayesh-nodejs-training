@@ -45,7 +45,6 @@ const createPost = async (
   post
     .save()
     .then((result) => {
-      //   console.log(result);
       res.status(201).json({
         post: {
           title: post.id,
@@ -128,7 +127,7 @@ const updatePost = async (
 
   const title = req.body.title;
   const content = req.body.content;
-  let imageUrl = req.body.image;
+  const imageUrl = req.body.image;
 
   Post.findOne({
     where: {

@@ -6,7 +6,11 @@ import { Request, Response, NextFunction } from "express";
 import { User } from "../entities/User";
 dotenv.config();
 
-const signUp = async (req: Request | any, res: Response, next: NextFunction) => {
+const signUp = async (
+  req: Request | any,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const errors = validationResult(req);
     console.log(req.body);
@@ -51,7 +55,6 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
-    let loadedUser: User;
 
     const user = await User.findOne({
       where: {
@@ -65,8 +68,6 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       throw error;
     }
 
-    loadedUser = user;
-
     const isValid: boolean = await compare(password, user.password);
 
     if (!isValid) {
@@ -74,13 +75,13 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       const error = new Error("Wrong Password.");
       throw error;
     }
-    console.log("user ROle from ", loadedUser.role);
+    console.log("user ROle from ", user.role);
 
     const token = sign(
       {
-        email: loadedUser.email,
-        userId: loadedUser.id.toString(),
-        userRole: loadedUser.role,
+        email: user.email,
+        userId: user.id.toString(),
+        userRole: user.role,
       },
       process.env.SECRETE_KEY || "",
       { expiresIn: "1h" }
@@ -89,8 +90,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     console.log("token : ", token);
     res.status(200).json({
       token: token,
-      userId: loadedUser.id,
-      userRole: loadedUser.role,
+      userId: user.id,
+      userRole: user.role,
     });
   } catch (err: any) {
     if (!err.statusCode) {
