@@ -1,6 +1,6 @@
-import { buildSchema } from "graphql";
+import { buildSchema, GraphQLOutputType } from "graphql";
 
-exports = buildSchema(`
+const graphqlSchema = buildSchema(`
 
 type Post {
     id : ID!
@@ -43,7 +43,7 @@ type RootQuery {
 }
 
 type RootMutation {
-    createUser(userInput : userInputData) : User!
+    createUser(userInput : UserInputData) : User!
 }
 
 schema {
@@ -52,3 +52,5 @@ schema {
 }
 
 `);
+
+export { graphqlSchema };
