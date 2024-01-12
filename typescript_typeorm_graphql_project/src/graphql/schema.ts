@@ -22,7 +22,7 @@ type User {
 type AuthData {
     token : String!
     userId : String!
-    userRoe : String!
+    userRole : String!
 }
 
 input UserInputData {
@@ -44,6 +44,7 @@ type RootQuery {
 
 type RootMutation {
     createUser(userInput : UserInputData) : User!
+    createPost(postInputData : PostInputData ) : Post!
 }
 
 schema {

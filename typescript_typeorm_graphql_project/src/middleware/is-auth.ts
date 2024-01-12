@@ -8,35 +8,32 @@ export function isAuth(req: Request | any, res: Response, next: NextFunction) {
   const authHeader: any = req.get("Authorization");
 
   if (!authHeader) {
-    res.statusCode = 401;
-    const error = new Error("Not Authenticated.");
-    throw error;
+    req.isAuth = false;
+    return next();
   }
 
   const token: string = authHeader.split(" ")[1];
-  console.log(token);
 
-  //   let decodedToken:  string | JwtPayload;
   let decodedToken;
 
   try {
-    console.log(process.env.SECRETE_KEY);
+    // console.log(process.env.SECRETE_KEY);
     decodedToken = verify(token, process.env.SECRETE_KEY || "") as JwtPayload;
   } catch (err: any) {
-    err.status = 500;
-    throw err;
+    req.isAuth = false;
+    return next();
   }
 
   if (!decodedToken) {
-    res.statusCode = 401;
-    const error = new Error("Not Autheticated.");
-    throw error;
+    req.isAuth = false;
+    return next();
   }
   console.log("decoded Token userid", decodedToken.userId);
   console.log("decoded tokedn userRole ", decodedToken.userRole);
 
   req.userId = decodedToken.userId;
   req.userRole = decodedToken.userRole;
+  req.isAuth = true
 
   next();
 }

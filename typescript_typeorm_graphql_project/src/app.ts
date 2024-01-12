@@ -5,26 +5,11 @@ import { graphqlSchema } from "./graphql/schema";
 import graphqlResolver from "./graphql/resolver";
 import { graphqlHTTP } from "express-graphql";
 import { configDotenv } from "dotenv";
-configDotenv()
+import { isAuth } from "./middleware/is-auth";
+configDotenv();
 const app = express();
 
-const port = 3000;
-console.log({
-  type: "postgres",
-  host: process.env.DB_HOST,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASS || "postgres",
-  database: process.env.DB_DATABASE,
-  port: parseInt(process.env.DB_PORT || "5432"),
-  entities: ["/src/entities/Post.ts", "/src/entities/User.ts"],
-  logging: false,
-  synchronize: false,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
-})
+const ServerPort = 3000;
 
 const connectDB = new DataSource({
   type: "postgres",
@@ -33,9 +18,9 @@ const connectDB = new DataSource({
   password: process.env.DB_PASS || "postgres",
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT || "5432"),
-  entities: ["/src/entities/Post.ts", "/src/entities/User.ts"],
+  entities: ["src/entities/Post.ts", "src/entities/User.ts"],
   logging: false,
-  synchronize: false,
+  synchronize: true,
   extra: {
     ssl: {
       rejectUnauthorized: false,
@@ -55,13 +40,15 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(isAuth)
+
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
     graphiql: true,
-    formatError(err: any) {
+    customFormatErrorFn(err: any) {
       if (!err.originalError) {
         return err;
       }
@@ -77,6 +64,7 @@ app.use((error, req, res, next) => {
   console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
+
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });
@@ -85,8 +73,10 @@ connectDB
   .initialize()
   .then(async () => {
     console.log(`Data Source has been initialized`);
-    app.listen(port, () => {
-      return console.log(`Express is listening at http://localhost:${port}`);
+    app.listen(ServerPort, () => {
+      return console.log(
+        `Express is listening at http://localhost:${ServerPort}`
+      );
     });
   })
   .catch((err) => {
