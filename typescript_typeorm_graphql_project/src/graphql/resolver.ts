@@ -3,14 +3,12 @@ import { isEmail, isEmpty, isLength } from "validator";
 import { sign } from "jsonwebtoken";
 import { Post } from "../entities/Post";
 import { User } from "../entities/User";
-// import { Request } from "express";
-// import type { Request } from "../myRequest";
+
+interface ErrorItem {
+  message: string;
+}
 
 async function createUser({ userInput }, req: Request) {
-  interface ErrorItem {
-    message: string;
-  }
-
   const errors: ErrorItem[] = [];
 
   if (!isEmail(userInput.email)) {
@@ -90,11 +88,7 @@ async function login({ email, password }) {
   return { token: token, userId: user.id.toString(), userRole: user.role };
 }
 
-async function createPost(
-  { postInputData },
-  req: Request | any
-  //   context: { req: Request | any }
-) {
+async function createPost({ postInputData }, req: Request | any) {
   console.log("In the create post resolver");
 
   console.log("In created Post => ", req);
@@ -103,10 +97,6 @@ async function createPost(
     const error = new Error("Not authenticated!") as any;
     error.code = 401;
     throw error;
-  }
-
-  interface ErrorItem {
-    message: string;
   }
 
   const errors: ErrorItem[] = [];
@@ -170,10 +160,21 @@ async function getPosts(args: any, req: Request | any) {
 
   const totalPosts = await Post.count();
 
-  const posts = await Post.createQueryBuilder("post")
-    .leftJoinAndSelect("post.creator", "creator")
-    .orderBy("post.id", "ASC")
-    .getMany();
+  const posts = await Post.find({
+    order: {
+      id: {
+        direction: "ASC",
+      },
+    },
+    relations: {
+      creator: true,
+    },
+  });
+
+  // const posts = await Post.createQueryBuilder("post")
+  //   .leftJoinAndSelect("post.creator", "creator")
+  //   .orderBy("post.id", "ASC")
+  //   .getMany();
 
   console.log("Posts : => ", posts);
 
@@ -195,10 +196,19 @@ async function getPostById({ id }, req: Request | any) {
     throw error;
   }
 
-  const post = await Post.createQueryBuilder("post")
-    .leftJoinAndSelect("post.creator", "creator")
-    .where("post.id = :id", { id: id })
-    .getOne();
+  const post = await Post.findOne({
+    where: {
+      id,
+    },
+    relations: {
+      creator: true,
+    },
+  });
+
+  // const post = await Post.createQueryBuilder("post")
+  //   .leftJoinAndSelect("post.creator", "creator")
+  //   .where("post.id = :id", { id: id })
+  //   .getOne();
 
   console.log("Post by Id => ", post.creator);
 
@@ -279,8 +289,8 @@ async function deletePost({ id }, req: Request | any) {
     .where("post.id = :id", { id: id })
     .getOne();
 
-    console.log("Post ====>", post);
-    
+  console.log("Post ====>", post);
+
   if (!post) {
     const error = new Error("No post found!") as any;
     error.code = 404;
