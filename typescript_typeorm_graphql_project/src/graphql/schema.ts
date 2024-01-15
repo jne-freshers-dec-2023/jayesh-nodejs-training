@@ -25,6 +25,11 @@ type AuthData {
     userRole : String!
 }
 
+type PostData {
+    posts : [Post!]!
+    totalPosts : Int!
+}
+
 input UserInputData {
     name : String!
     email : String!
@@ -40,11 +45,15 @@ input PostInputData {
 
 type RootQuery {
     login(email : String!, password : String!) : AuthData!
+    getPosts : PostData
+    getPostById(id : ID!) : Post!
 }
 
 type RootMutation {
     createUser(userInput : UserInputData) : User!
     createPost(postInputData : PostInputData ) : Post!
+    updatePost(id: ID!, postInput: PostInputData): Post!
+    deletePost(id: ID!): Boolean
 }
 
 schema {

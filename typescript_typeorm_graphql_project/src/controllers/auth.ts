@@ -44,9 +44,11 @@ const signUp = async (
       .json({ message: "User created!", userId: result.id, userRole: role });
     return result;
   } catch (err: any) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
+    // if (!err.statusCode) {
+    //   err.statusCode = 500;
+    // }
+    const status = err.statusCode || 500;
+    const message = err.message;
     next(err);
   }
 };
@@ -94,9 +96,11 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       userRole: user.role,
     });
   } catch (err: any) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
+    // if (!err.statusCode) {
+    //   err.statusCode = 500;
+    // }
+    const status = err.statusCode || 500;
+    const message = err.message;
     next(err);
   }
 };

@@ -100,12 +100,12 @@ async function createPost(
   console.log("In created Post => ", req);
 
   if (!req.isAuth) {
-    const error = new Error('Not authenticated!') as any;
+    const error = new Error("Not authenticated!") as any;
     error.code = 401;
     throw error;
   }
 
-  interface ErrorItem { 
+  interface ErrorItem {
     message: string;
   }
 
@@ -161,4 +161,152 @@ async function createPost(
   };
 }
 
-export default { createUser, login, createPost };
+async function getPosts(args: any, req: Request | any) {
+  if (!req.isAuth) {
+    const error = new Error("Not authenticated!") as any;
+    error.code = 401;
+    throw error;
+  }
+
+  const totalPosts = await Post.count();
+
+  const posts = await Post.createQueryBuilder("post")
+    .leftJoinAndSelect("post.creator", "creator")
+    .orderBy("post.id", "ASC")
+    .getMany();
+
+  console.log("Posts : => ", posts);
+
+  return {
+    posts: posts.map((p) => {
+      return {
+        ...p,
+        id: p.id,
+      };
+    }),
+    totalPosts: totalPosts,
+  };
+}
+
+async function getPostById({ id }, req: Request | any) {
+  if (!req.isAuth) {
+    const error = new Error("Not authenticated!") as any;
+    error.code = 401;
+    throw error;
+  }
+
+  const post = await Post.createQueryBuilder("post")
+    .leftJoinAndSelect("post.creator", "creator")
+    .where("post.id = :id", { id: id })
+    .getOne();
+
+  console.log("Post by Id => ", post.creator);
+
+  if (!post) {
+    const error = new Error("No post found!") as any;
+    error.code = 404;
+    throw error;
+  }
+
+  console.log("Post creator id", post.creator.id);
+
+  return {
+    ...post,
+  };
+}
+
+async function updatePost({ id, postInput }, req: Request | any) {
+  console.log({ id, postInput });
+  console.log("Req is Auth ", req.isAuth);
+
+  if (!req.isAuth) {
+    const error = new Error("Not authenticated!") as any;
+    error.code = 401;
+    throw error;
+  }
+
+  const post = await Post.createQueryBuilder("post")
+    .leftJoinAndSelect("post.creator", "creator")
+    .where("post.id = :id", { id: id })
+    .getOne();
+
+  if (!post) {
+    const error = new Error("No post found!") as any;
+    error.code = 404;
+    throw error;
+  }
+
+  if (post.creator.id !== parseInt(req.userId)) {
+    const error = new Error("Not authorized!") as any;
+    error.code = 403;
+    throw error;
+  }
+
+  const errors = [];
+  if (isEmpty(postInput.title) || !isLength(postInput.title, { min: 5 })) {
+    errors.push({ message: "Title is invalid." });
+  }
+  if (isEmpty(postInput.content) || !isLength(postInput.content, { min: 5 })) {
+    errors.push({ message: "Content is invalid." });
+  }
+  if (errors.length > 0) {
+    const error = new Error("Invalid input.") as any;
+    error.data = errors;
+    error.code = 422;
+    throw error;
+  }
+
+  post.title = postInput.title;
+  post.content = postInput.content;
+  post.imageUrl = postInput.imageUrl;
+
+  const updatedPost = await post.save();
+
+  return {
+    ...updatedPost,
+  };
+}
+
+async function deletePost({ id }, req: Request | any) {
+  if (!req.isAuth) {
+    const error = new Error("Not authenticated!") as any;
+    error.code = 401;
+    throw error;
+  }
+
+  const post = await Post.createQueryBuilder("post")
+    .leftJoinAndSelect("post.creator", "creator")
+    .where("post.id = :id", { id: id })
+    .getOne();
+
+    console.log("Post ====>", post);
+    
+  if (!post) {
+    const error = new Error("No post found!") as any;
+    error.code = 404;
+    throw error;
+  }
+  if (post.creator.id !== parseInt(req.userId)) {
+    const error = new Error("Not authorized!") as any;
+    error.code = 403;
+    throw error;
+  }
+
+  await Post.delete({
+    id: id,
+  });
+
+  await post.save();
+
+  return true;
+}
+
+export default {
+  createUser,
+  login,
+  createPost,
+  getPosts,
+  getPostById,
+  updatePost,
+  deletePost,
+};
