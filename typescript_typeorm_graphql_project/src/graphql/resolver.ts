@@ -3,7 +3,8 @@ import { isEmail, isEmpty, isLength } from "validator";
 import { sign } from "jsonwebtoken";
 import { Post } from "../entities/Post";
 import { User } from "../entities/User";
-import { Request } from "express";
+// import { Request } from "express";
+// import type { Request } from "../myRequest";
 
 async function createUser({ userInput }, req: Request) {
   interface ErrorItem {
@@ -64,7 +65,7 @@ async function login({ email, password }) {
 
   if (!user) {
     const error = new Error("User Not Found.") as any;
-    error.code = 401;
+    error.code = 404;
     throw error;
   }
 
@@ -86,22 +87,25 @@ async function login({ email, password }) {
     { expiresIn: "1h" }
   );
 
-  
   return { token: token, userId: user.id.toString(), userRole: user.role };
 }
 
-async function createPost({ postInputData }, req: Request | any) {
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>FFFFFFFFFFFFFFFF>>>>>>>>>>>>>>>>.");
-  
-  console.log("In created Post => ",req);
-  
+async function createPost(
+  { postInputData },
+  req: Request | any
+  //   context: { req: Request | any }
+) {
+  console.log("In the create post resolver");
+
+  console.log("In created Post => ", req);
+
   if (!req.isAuth) {
-    const error = new Error("User Not Found.") as any;
+    const error = new Error('Not authenticated!') as any;
     error.code = 401;
     throw error;
   }
 
-  interface ErrorItem {
+  interface ErrorItem { 
     message: string;
   }
 
@@ -147,7 +151,6 @@ async function createPost({ postInputData }, req: Request | any) {
   const createdPost = await post.save();
   console.log("Post : => ", post);
 
-  user.posts.push(createdPost);
   await user.save();
 
   console.log("createdPost ==> ", createdPost);

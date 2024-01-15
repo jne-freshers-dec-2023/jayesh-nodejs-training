@@ -63,7 +63,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     if (!user) {
-      res.statusCode = 401;
+      res.statusCode = 404;
       const error = new Error("User with this email could not found.");
       throw error;
     }

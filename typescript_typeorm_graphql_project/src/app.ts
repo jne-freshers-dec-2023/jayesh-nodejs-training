@@ -20,7 +20,7 @@ const connectDB = new DataSource({
   port: parseInt(process.env.DB_PORT || "5432"),
   entities: ["src/entities/Post.ts", "src/entities/User.ts"],
   logging: false,
-  synchronize: true,
+  synchronize: false,
   extra: {
     ssl: {
       rejectUnauthorized: false,
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(isAuth)
+app.use(isAuth);
 
 app.use(
   "/graphql",

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node"],
+    "types": ["node","express"],
     "lib": ["es2015"],
     "target": "es2015",
     "outDir": "./dist",
