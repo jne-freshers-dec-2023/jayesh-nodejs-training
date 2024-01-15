@@ -60,11 +60,6 @@ const createPost = async (
       });
     })
     .catch((err) => {
-      // if (!err.statusCode) {
-      //   err.statusCode = 500;
-      // }
-      // const status = err.statusCode || 500;
-      // const message = err.message;
       next(err);
     });
 };
@@ -102,11 +97,6 @@ const getPostById = async (
         res.status(200).json({ message: "Post fetched.", post: post });
       })
       .catch((err) => {
-        // if (!err.statusCode) {
-        //   err.statusCode = 500;
-        // }
-        // const status = err.statusCode || 500;
-        // const message = err.message;
         next(err);
       });
   } catch (err) {
@@ -162,11 +152,6 @@ const updatePost = async (
       res.status(200).json({ message: "Post updated!", post: result });
     })
     .catch((err) => {
-      // if (!err.statusCode) {
-      //   err.statusCode = 500;
-      // }
-      // const status = err.statusCode || 500;
-      // const message = err.message;
       next(err);
     });
 };
@@ -207,11 +192,6 @@ const deletePostById = (
       res.status(200).json({ message: "Post deleted Successfully." });
     })
     .catch((err) => {
-      // if (!err.statusCode) {
-      //   err.statusCode = 500;
-      // }
-      // const status = err.statusCode || 500;
-      // const message = err.message;
       next(err);
     });
 };

@@ -17,7 +17,6 @@ export function isAuth(req: Request | any, res: Response, next: NextFunction) {
   let decodedToken;
 
   try {
-    // console.log(process.env.SECRETE_KEY);
     decodedToken = verify(token, process.env.SECRETE_KEY || "") as JwtPayload;
   } catch (err: any) {
     req.isAuth = false;
@@ -33,7 +32,7 @@ export function isAuth(req: Request | any, res: Response, next: NextFunction) {
 
   req.userId = decodedToken.userId;
   req.userRole = decodedToken.userRole;
-  req.isAuth = true
+  req.isAuth = true;
 
   next();
 }
