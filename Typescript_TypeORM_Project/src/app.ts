@@ -17,7 +17,7 @@ const connectDB = new DataSource({
   port: parseInt(process.env.DB_PORT || "5432"),
   entities: ["src/entities/Post.ts", "src/entities/User.ts"],
   logging: false,
-  synchronize: false,
+  synchronize: true,
   extra: {
     ssl: {
       rejectUnauthorized: false,
